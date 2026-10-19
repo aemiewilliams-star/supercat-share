@@ -1,0 +1,11 @@
+{
+  "name": "supercat-share",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "supercat 공유 포털 — HTML을 넣고 push 하면 URL로 공유",
+  "scripts": {
+    "build": "node scripts/build-index.mjs",
+    "preview": "node scripts/build-index.mjs && cd public && python3 -m http.server 8080"
+  }
+}

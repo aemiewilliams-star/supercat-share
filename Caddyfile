@@ -1,0 +1,12 @@
+:8080 {
+	root * /srv
+	encode gzip zstd
+
+	# /report → report.html 처럼 확장자 없는 깔끔한 URL도 받아줌
+	try_files {path} {path}.html {path}/
+	file_server
+
+	handle_errors {
+		respond "{err.status_code} — 페이지를 찾을 수 없어요" {err.status_code}
+	}
+}

@@ -1,0 +1,23 @@
+# supercat 공유 포털 — Fly.io 정적 호스팅
+# 앱 이름은 fly launch 시 전역 유일해야 함 (충돌 시 supercat-share-xxxx 로 조정)
+app = "supercat-share"
+primary_region = "nrt"   # 도쿄 — 한국에서 가장 가까움
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # 유휴 시 머신을 멈춰 비용을 거의 0으로. 요청 오면 자동 기동(콜드스타트 ~1s)
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

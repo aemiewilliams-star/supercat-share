@@ -1,0 +1,5 @@
+# 생성물 — build-index.mjs 가 매번 자동 생성
+public/index.html
+
+.DS_Store
+node_modules/
