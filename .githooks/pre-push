@@ -1,0 +1,38 @@
+#!/bin/sh
+# supercat-share — main 으로 push 하면 Fly 자동배포 (이 머신에서 로컬 실행)
+#   한 번 건너뛰기: git push --no-verify
+#   끄기:          이 파일(.git/hooks/pre-push) 삭제
+# ------------------------------------------------------------------
+z="0000000000000000000000000000000000000000"
+want=""
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ] && [ "$local_sha" != "$z" ]; then
+    want=1
+  fi
+done
+
+[ -z "$want" ] && exit 0
+
+# fly 실행파일 찾기 (PATH → Homebrew → flyctl)
+if command -v fly >/dev/null 2>&1; then FLY=fly
+elif [ -x /opt/homebrew/bin/fly ]; then FLY=/opt/homebrew/bin/fly
+elif command -v flyctl >/dev/null 2>&1; then FLY=flyctl
+else
+  echo "✗ fly CLI 를 못 찾아 배포를 건너뜁니다. push 는 계속됩니다." >&2
+  exit 0
+fi
+
+echo ""
+echo "▶ [supercat-share] main → Fly 자동배포 ($FLY deploy --remote-only)"
+echo "   건너뛰기: git push --no-verify   ·   끄기: .git/hooks/pre-push 삭제"
+echo ""
+
+if "$FLY" deploy --remote-only; then
+  echo ""
+  echo "✓ 배포 완료 → https://supercat-share.fly.dev/"
+  exit 0
+else
+  echo ""
+  echo "✗ Fly 배포 실패 — push 를 중단합니다. 고친 뒤 다시 push 하거나 'git push --no-verify' 로 배포 없이 올리세요." >&2
+  exit 1
+fi

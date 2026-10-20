@@ -12,9 +12,9 @@ Fly.io(Caddy 정적 서버)에 올라가며, `main` 에 push 하면 자동 배�
    git add . && git commit -m "add report" && git push
    ```
 3. 잠시 뒤 아래 주소로 공유된다.
-   - `https://<앱주소>/report`  (또는 `/report.html`)
-   - `https://<앱주소>/2026/q4`
-   - 메인 페이지 `https://<앱주소>/` 에 **자동으로 목록(갤러리)** 으로도 등록된다.
+   - `https://supercat-share.fly.dev/report`  (또는 `/report.html`)
+   - `https://supercat-share.fly.dev/2026/q4`
+   - 메인 페이지 `https://supercat-share.fly.dev/` 에 **자동으로 목록(갤러리)** 으로도 등록된다.
 
 > 팁: 각 HTML 의 `<title>` 과 `<meta name="description">` 이 목록 카드의 제목·설명으로 쓰입니다. 넣어두면 보기 좋아요.
 
@@ -42,23 +42,23 @@ scripts/
 Dockerfile        ← node 로 index 빌드 → caddy 로 서빙 (멀티스테이지)
 Caddyfile         ← 정적 서빙 + 깔끔한 URL(try_files)
 fly.toml          ← Fly 설정 (auto-stop 으로 유휴비용 ~0)
-.github/workflows/deploy.yml ← push → 자동 배포
+.githooks/pre-push ← main 에 push 하면 fly deploy 자동 실행 (로컬)
 ```
 
-## 최초 배포 (한 번만)
+## 자동 배포 (git push → fly deploy)
 
-```bash
-fly launch --no-deploy   # 앱 이름/리전 확인 (fly.toml 이미 있음)
-fly deploy               # 첫 배포
-```
+`main` 으로 push 하면 `.githooks/pre-push` 훅이 **이 머신에서** `fly deploy --remote-only` 를
+실행한 뒤 push 합니다. 빌드는 Fly 원격 빌더에서 돌아서 로컬 Docker 는 필요 없어요. (1~2분)
 
-이후 **git push → 자동 배포**를 쓰려면 GitHub 레포에 Fly 토큰을 등록:
+- 배포가 실패하면 push 도 중단됩니다 → 고친 뒤 다시 push
+- 배포 없이 올리기: `git push --no-verify`
+- 새로 clone 한 곳에서는 한 번만:
+  ```bash
+  git config core.hooksPath .githooks
+  fly auth login
+  ```
 
-```bash
-fly tokens create deploy -x 999999h   # 토큰 발급
-# GitHub → repo → Settings → Secrets and variables → Actions
-#   → New secret: 이름 FLY_API_TOKEN, 값 위 토큰
-```
+> 앱: `supercat-share` (Fly personal org, nrt) · 수동 배포는 언제든 `fly deploy`
 
 ## 커스텀 도메인 (선택)
 
