@@ -1,7 +1,7 @@
 #!/bin/sh
 # supercat-share — main 으로 push 하면 Fly 자동배포 (이 머신에서 로컬 실행)
 #   한 번 건너뛰기: git push --no-verify
-#   끄기:          이 파일(.git/hooks/pre-push) 삭제
+#   끄기:          git config --unset core.hooksPath
 # ------------------------------------------------------------------
 z="0000000000000000000000000000000000000000"
 want=""
@@ -24,7 +24,7 @@ fi
 
 echo ""
 echo "▶ [supercat-share] main → Fly 자동배포 ($FLY deploy --remote-only)"
-echo "   건너뛰기: git push --no-verify   ·   끄기: .git/hooks/pre-push 삭제"
+echo "   건너뛰기: git push --no-verify   ·   끄기: git config --unset core.hooksPath"
 echo ""
 
 if "$FLY" deploy --remote-only; then
